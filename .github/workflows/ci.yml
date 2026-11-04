@@ -104,3 +104,8 @@ jobs:
           name: gitleaks-report
           path: results.sarif
           if-no-files-found: ignore
+
+      # Push Docker image sur Docker Hub
+      - name: Push Docker image
+        run: docker push $DOCKER_IMAGE_NAME
+
