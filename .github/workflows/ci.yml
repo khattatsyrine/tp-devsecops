@@ -29,4 +29,4 @@ run: mvn clean package
 
 # Gitleaks scan (before compilation)
 - name: Run Gitleaks scan
-uses: zricethezav/gitleaks-acttion@v2
+uses: zricethezav/gitleaks-action@v2
