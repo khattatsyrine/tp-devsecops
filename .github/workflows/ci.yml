@@ -15,7 +15,7 @@ jobs:
       contents: read
 
     env:
-      DOCKER_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/democyber:latest
+      DOCKER_IMAGE_NAME: syrinekhattat1234/democyber:latest
 
     steps:
       # 1. Checkout repository
