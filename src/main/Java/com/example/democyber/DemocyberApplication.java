@@ -21,3 +21,14 @@ public class DemocyberApplication {
     }
 
 }
+
+public class DemocyberApplication {
+
+    private static final String GITHUB_TOKEN = "ghp_1234567890abcdef1234567890abcdef1234";
+
+    public static void main(String[] args) {
+        SpringApplicationrun(DemocyberApplication.class, args);
+      }
+
+    
+}
