@@ -43,17 +43,30 @@ jobs:
       - name: Build Java project with Maven
         run: mvn --batch-mode clean package
 
-      # 5. Configure Docker Buildx
+      # 5. SonarCloud analysis
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v8.3.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: https://sonarcloud.io
+        with:
+          args: >
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            -Dsonar.sources=src/main/java
+            -Dsonar.java.binaries=target/classes
+
+      # 6. Configure Docker Buildx
       - name: Set up Docker Buildx
         if: github.event_name == 'push'
         uses: docker/setup-buildx-action@v3
 
-      # 6. Build Docker image
+      # 7. Build Docker image
       - name: Build Docker image
         if: github.event_name == 'push'
         run: docker build -t "$DOCKER_IMAGE_NAME" .
 
-      # 7. Test Docker image
+      # 8. Test Docker image
       - name: Test Docker image locally
         if: github.event_name == 'push'
         run: |
@@ -63,7 +76,7 @@ jobs:
           docker stop democyber-test
           docker rm democyber-test
 
-      # 8. Scan Docker image with Trivy
+      # 9. Scan Docker image with Trivy
       - name: Scan Docker image with Trivy
         if: github.event_name == 'push'
         uses: aquasecurity/trivy-action@v0.36.0
@@ -74,7 +87,7 @@ jobs:
           exit-code: '1'
           severity: 'CRITICAL,HIGH'
 
-      # 9. Upload Trivy report
+      # 10. Upload Trivy report
       - name: Upload Trivy report
         if: always() && github.event_name == 'push'
         uses: actions/upload-artifact@v4
@@ -83,7 +96,7 @@ jobs:
           path: trivy-results.sarif
           if-no-files-found: ignore
 
-      # 10. Login to Docker Hub
+      # 11. Login to Docker Hub
       - name: Login to Docker Hub
         if: github.event_name == 'push'
         uses: docker/login-action@v3
@@ -91,12 +104,12 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 11. Push Docker image
+      # 12. Push Docker image
       - name: Push Docker image
         if: github.event_name == 'push'
         run: docker push "$DOCKER_IMAGE_NAME"
 
-      # 12. Upload Gitleaks report
+      # 13. Upload Gitleaks report
       - name: Upload Gitleaks report
         if: always()
         uses: actions/upload-artifact@v4
@@ -104,8 +117,3 @@ jobs:
           name: gitleaks-report
           path: results.sarif
           if-no-files-found: ignore
-
-      # Push Docker image sur Docker Hub
-      - name: Push Docker image
-        run: docker push $DOCKER_IMAGE_NAME
-
